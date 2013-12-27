@@ -157,12 +157,7 @@ class BaseCursor(object):
             if isinstance(query, bytes):
                 query = query.decode();
 
-            if isinstance(args, dict):
-                query = query.format( **db.literal(args) )
-            elif isinstance(args, tuple) or isinstance(args, list):
-                query = query.format( *db.literal(args) )
-            else:
-                query = query.format( db.literal(args) )
+            query = query % db.literal(args)
 
         if isinstance(query, str):
             query = query.encode(charset);
@@ -217,15 +212,7 @@ class BaseCursor(object):
         e = m.end(1)
         qv = m.group(1)
         try:
-            q = []
-            for a in args:
-                if isinstance(a, dict):
-                    data = qv.format(**db.literal(a))
-                elif isinstance(a, tuple) or isinstance(a, list):
-                    data = qv.format( *db.literal(a) )
-                else:
-                    data = qv.format( db.literal(a) )
-                q.append( data )
+            q = [ qv % db.literal(a) for a in args ]
         except TypeError as msg:
             if msg.args[0] in ("not enough arguments for format string",
                                "not all arguments converted"):
@@ -273,13 +260,14 @@ class BaseCursor(object):
         db = self._get_db()
         charset = db.character_set_name()
         for index, arg in enumerate(args):
-            q = "SET @_{!s}_{:d}={!s}".format(procname, index, db.literal(arg))
+            q = "SET @_%s_%d=%s" % (procname, index, db.literal(arg))
             if isinstance(q, str):
                 q = q.encode(charset)
             self._query(q)
             self.nextset()
             
-        q = "CALL {!s}({!s})".format(procname, ','.join(['@_{!s}_{:d}'.format(procname, i)
+        q = "CALL %s(%s)" % (procname,
+                             ','.join(['@_%s_%d' % (procname, i)
                                        for i in range(len(args))]))
         if type(q) is str:
             q = q.encode(charset)

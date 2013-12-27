@@ -81,7 +81,7 @@ class DatabaseTest(unittest.TestCase):
         self.create_table(columndefs)
         insert_statement = ('INSERT INTO %s VALUES (%s)' % 
                             (self.table,
-                             ','.join(['{!s}'] * len(columndefs))))
+                             ','.join(['%s'] * len(columndefs))))
         data = [ [ generator(i,j) for j in range(len(columndefs)) ]
                  for i in range(self.rows) ]
         if self.debug:
@@ -110,7 +110,7 @@ class DatabaseTest(unittest.TestCase):
         self.create_table(columndefs)
         insert_statement = ('INSERT INTO %s VALUES (%s)' % 
                             (self.table,
-                             ','.join(['{!s}'] * len(columndefs))))
+                             ','.join(['%s'] * len(columndefs))))
         data = [ [ generator(i,j) for j in range(len(columndefs)) ]
                  for i in range(self.rows) ]
         self.cursor.executemany(insert_statement, data)
@@ -122,7 +122,7 @@ class DatabaseTest(unittest.TestCase):
         for i in range(self.rows):
             for j in range(len(columndefs)):
                 self.assertEquals(l[i][j], generator(i,j))
-        delete_statement = 'delete from %s where col1={!s}' % self.table
+        delete_statement = 'delete from %s where col1=%%s' % self.table
         self.cursor.execute(delete_statement, (0,))
         self.cursor.execute('select col1 from %s where col1=%s' % \
                             (self.table, 0))
@@ -139,11 +139,11 @@ class DatabaseTest(unittest.TestCase):
         columndefs = ( 'col1 INT', 'col2 VARCHAR(255)')
         def generator(row, col):
             if col == 0: return row
-            else: return ('{:d}'.format(row%10))*(round(255-self.rows/2)+row)
+            else: return ('%i' % (row%10))*(round(255-self.rows/2)+row)
         self.create_table(columndefs)
         insert_statement = ('INSERT INTO %s VALUES (%s)' % 
                             (self.table,
-                             ','.join(['{!s}'] * len(columndefs))))
+                             ','.join(['%s'] * len(columndefs))))
 
         try:
             self.cursor.execute(insert_statement, (0, '0'*256))
