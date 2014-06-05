@@ -153,16 +153,17 @@ class BaseCursor(object):
         db = self._get_db()
         charset = db.character_set_name()
 
-        if args is not None:
-            if isinstance(query, bytes):
-                query = query.decode();
+        if isinstance(query, bytes):
+            query = query.decode();
 
+        if args is not None:
             query = query % db.literal(args)
 
         if isinstance(query, str):
             query = query.encode(charset);
 
         try:
+            r = None
             r = self._query(query)
         except TypeError as m:
             if m.args[0] in ("not enough arguments for format string",
