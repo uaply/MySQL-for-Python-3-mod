@@ -121,13 +121,8 @@ class DatabaseTest(unittest.TestCase):
         self.assertEqual(len(l), self.rows)
         for i in range(self.rows):
             for j in range(len(columndefs)):
-<<<<<<< HEAD
                 self.assertEqual(l[i][j], generator(i,j))
         delete_statement = 'delete from %s where col1={!s}' % self.table
-=======
-                self.assertEquals(l[i][j], generator(i,j))
-        delete_statement = 'delete from %s where col1=%%s' % self.table
->>>>>>> 2f0704cac9b14968b888d01861ada09a937c438d
         self.cursor.execute(delete_statement, (0,))
         self.cursor.execute('select col1 from %s where col1=%s' % \
                             (self.table, 0))

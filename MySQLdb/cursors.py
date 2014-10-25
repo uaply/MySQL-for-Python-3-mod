@@ -156,10 +156,7 @@ class BaseCursor(object):
         if isinstance(query, bytes):
             query = query.decode();
 
-<<<<<<< HEAD
         if args is not None:
-=======
->>>>>>> 2f0704cac9b14968b888d01861ada09a937c438d
             query = query % db.literal(args)
 
         if isinstance(query, str):
@@ -216,14 +213,10 @@ class BaseCursor(object):
         e = m.end(1)
         qv = m.group(1)
         try:
-<<<<<<< HEAD
             q = []
             for a in args:
                 data = qv % db.literal(a)
                 q.append( data )
-=======
-            q = [ qv % db.literal(a) for a in args ]
->>>>>>> 2f0704cac9b14968b888d01861ada09a937c438d
         except TypeError as msg:
             if msg.args[0] in ("not enough arguments for format string",
                                "not all arguments converted"):
