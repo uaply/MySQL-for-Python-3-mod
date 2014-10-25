@@ -272,7 +272,7 @@ class Connection(_mysql.connection):
             except AttributeError:
                 if self._server_version < (4, 1):
                     raise NotSupportedError("server is too old to set charset")
-                self.query('SET NAMES {!s}'.format(charset))
+                self.query('SET NAMES %s' % charset)
                 self.store_result()
         self.bytes_literal.charset = charset
 
@@ -281,7 +281,7 @@ class Connection(_mysql.connection):
         legal values."""
         if self._server_version < (4, 1):
             raise NotSupportedError("server is too old to set sql_mode")
-        self.query("SET SESSION sql_mode='{!s}'".format(sql_mode))
+        self.query("SET SESSION sql_mode='%s'" % sql_mode)
         self.store_result()
         
     def show_warnings(self):

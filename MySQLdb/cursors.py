@@ -156,7 +156,10 @@ class BaseCursor(object):
         if isinstance(query, bytes):
             query = query.decode();
 
+<<<<<<< HEAD
         if args is not None:
+=======
+>>>>>>> 2f0704cac9b14968b888d01861ada09a937c438d
             query = query % db.literal(args)
 
         if isinstance(query, str):
@@ -213,10 +216,14 @@ class BaseCursor(object):
         e = m.end(1)
         qv = m.group(1)
         try:
+<<<<<<< HEAD
             q = []
             for a in args:
                 data = qv % db.literal(a)
                 q.append( data )
+=======
+            q = [ qv % db.literal(a) for a in args ]
+>>>>>>> 2f0704cac9b14968b888d01861ada09a937c438d
         except TypeError as msg:
             if msg.args[0] in ("not enough arguments for format string",
                                "not all arguments converted"):
@@ -264,13 +271,14 @@ class BaseCursor(object):
         db = self._get_db()
         charset = db.character_set_name()
         for index, arg in enumerate(args):
-            q = "SET @_{!s}_{:d}={!s}".format(procname, index, db.literal(arg))
+            q = "SET @_%s_%d=%s" % (procname, index, db.literal(arg))
             if isinstance(q, str):
                 q = q.encode(charset)
             self._query(q)
             self.nextset()
             
-        q = "CALL {!s}({!s})".format(procname, ','.join(['@_{!s}_{:d}'.format(procname, i)
+        q = "CALL %s(%s)" % (procname,
+                             ','.join(['@_%s_%d' % (procname, i)
                                        for i in range(len(args))]))
         if type(q) is str:
             q = q.encode(charset)
